@@ -14,25 +14,24 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-
-const productDetailSchema = z.object({
-  name: z.string(),
-  url: z.string(),
-  description: z.string().optional(),
-});
+import { productDetailSchema } from "@/schemas/products";
+import { createProduct } from "@/server/actions/products";
 
 export const ProductDetailForm = () => {
   const form = useForm<z.infer<typeof productDetailSchema>>({
     resolver: zodResolver(productDetailSchema),
     defaultValues: {
-      name:"",
-      url:"",
-      description:""
+      name: "",
+      url: "",
+      description: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof productDetailSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof productDetailSchema>) {
+    const data= await createProduct(values);
+    if(data.error && data.message){
+      
+    }
   }
 
   return (
