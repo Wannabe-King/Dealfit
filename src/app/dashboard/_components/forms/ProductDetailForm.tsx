@@ -16,6 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { productDetailSchema } from "@/schemas/products";
 import { createProduct } from "@/server/actions/products";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 export const ProductDetailForm = () => {
   const form = useForm<z.infer<typeof productDetailSchema>>({
@@ -29,8 +31,8 @@ export const ProductDetailForm = () => {
 
   async function onSubmit(values: z.infer<typeof productDetailSchema>) {
     const data= await createProduct(values);
-    if(data.error && data.message){
-      
+    if(data?.message){
+      toast(data.error?"Error":"Success")
     }
   }
 
@@ -73,23 +75,26 @@ export const ProductDetailForm = () => {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Product Description</FormLabel>
-                <FormControl>
-                  <Textarea {...field} />
-                </FormControl>
-                <FormDescription>
-                  An optional description to help distinguish your product from
-                  other products
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        </div>
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Product Description</FormLabel>
+              <FormControl>
+                <Textarea {...field} />
+              </FormControl>
+              <FormDescription>
+                An optional description to help distinguish your product from
+                other products
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div className="self-end">
+          <Button >Save</Button>
         </div>
       </form>
     </Form>

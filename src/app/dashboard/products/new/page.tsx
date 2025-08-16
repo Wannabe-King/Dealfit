@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageWithBackButton } from "../../_components/PageWithBackButton";
-import { ProductDetailForm } from "../../_components/ProductDetailForm";
+import { ProductDetailForm } from "../../_components/forms/ProductDetailForm";
 
 export default function NewProductPage() {
   return (
