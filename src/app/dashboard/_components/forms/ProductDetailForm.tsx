@@ -15,31 +15,43 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { productDetailSchema } from "@/schemas/products";
-import { createProduct } from "@/server/actions/products";
+import { createProduct, updateProduct } from "@/server/actions/products";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
-export const ProductDetailForm = () => {
+export const ProductDetailForm = ({
+  product,
+}: {
+  product?: {
+    id: string;
+    name: string;
+    description: string | null;
+    url: string;
+  };
+}) => {
   const form = useForm<z.infer<typeof productDetailSchema>>({
     resolver: zodResolver(productDetailSchema),
-    defaultValues: {
-      name: "",
-      url: "",
-      description: "",
-    },
+    defaultValues: product
+      ? { ...product, description: product?.description ?? "" }
+      : {
+          name: "",
+          url: "",
+          description: "",
+        },
   });
 
   async function onSubmit(values: z.infer<typeof productDetailSchema>) {
-    const data= await createProduct(values);
-    if(data?.message){
-      toast(data.error?"Error":"Success")
+    const action =
+      product == null ? createProduct : updateProduct.bind(null, product.id);
+    const data = await action(values);
+    if (data?.message) {
+      toast(data.error ? "Error" : "Success");
     }
   }
 
   return (
     <Form {...form}>
       <form
-        action=""
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex gap-6 flex-col"
       >
@@ -94,7 +106,9 @@ export const ProductDetailForm = () => {
           )}
         />
         <div className="self-end">
-          <Button >Save</Button>
+          <Button disabled={form.formState.isSubmitting} type="submit">
+            Save
+          </Button>
         </div>
       </form>
     </Form>
