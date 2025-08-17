@@ -85,7 +85,7 @@ export async function updateProduct(
     .set(data)
     .where(and(eq(ProductTable.id, id), eq(ProductTable.clerkUserId, userId)));
 
-  if (rowCount < 0) {
+  if (rowCount > 0) {
     revalidateDbCache({ tag: CACHE_TAGS.products, userId, id });
   }
 
