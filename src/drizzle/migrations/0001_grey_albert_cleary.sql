@@ -1,0 +1,1 @@
+ALTER TABLE "countries" DROP COLUMN "updated_at";

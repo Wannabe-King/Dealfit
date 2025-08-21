@@ -2,6 +2,7 @@
   "name": "dealfit",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -9,7 +10,8 @@
     "lint": "next lint",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:updateCountryGroups": "tsx --env-file=.env ./src/tasks/updateCountryGroups.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
@@ -47,7 +49,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.4.5",
     "tailwindcss": "^4",
-    "tsx": "^4.20.3",
+    "tsx": "^4.20.4",
     "tw-animate-css": "^1.3.6",
     "typescript": "^5"
   }

@@ -1,0 +1,9 @@
+# name: Deploy
+# on:
+#   push:
+#     branches: [main]
+
+# jobs:
+# redeploy_everything:
+#     runs_on: ubuntu-latest
+#     name: deploy the frontend
