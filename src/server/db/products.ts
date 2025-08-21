@@ -1,5 +1,9 @@
 import { db } from "@/drizzle/db";
-import { ProductCustomizationTable, ProductTable } from "@/drizzle/schema";
+import {
+  CountryGroupDiscountTable,
+  ProductCustomizationTable,
+  ProductTable,
+} from "@/drizzle/schema";
 import {
   CACHE_TAGS,
   dbCache,
@@ -8,7 +12,9 @@ import {
   getUserTag,
   revalidateDbCache,
 } from "@/lib/cache";
-import { and, eq } from "drizzle-orm";
+import { group } from "console";
+import { and, eq, inArray, sql } from "drizzle-orm";
+import { BatchItem } from "drizzle-orm/batch";
 
 export function getProductCountryGroups({
   productId,
@@ -109,6 +115,58 @@ export async function updateProduct(
   return rowCount > 0;
 }
 
+export async function updateCountryDiscounts(
+  deleteGroup: { countryGroupId: string }[],
+  insertGroup: (typeof CountryGroupDiscountTable.$inferInsert)[],
+  { productId, userId }: { productId: string; userId: string }
+) {
+  const product = await getProduct({ id: productId, userId });
+  if (product == null) return false;
+
+  const statements: BatchItem<"pg">[] = [];
+  if (deleteGroup.length > 0) {
+    statements.push(
+      db.delete(CountryGroupDiscountTable).where(
+        and(
+          eq(CountryGroupDiscountTable.productId, productId),
+          inArray(
+            CountryGroupDiscountTable.countryGroupId,
+            deleteGroup.map((group) => group.countryGroupId)
+          )
+        )
+      )
+    );
+  }
+
+  if (insertGroup.length > 0) {
+    statements.push(
+      db
+        .insert(CountryGroupDiscountTable)
+        .values(insertGroup)
+        .onConflictDoUpdate({
+          target: [
+            CountryGroupDiscountTable.productId,
+            CountryGroupDiscountTable.countryGroupId,
+          ],
+          set: {
+            coupon: sql.raw(
+              `excluded.${CountryGroupDiscountTable.coupon.name}`
+            ),
+            discountPercentage: sql.raw(
+              `excluded.${CountryGroupDiscountTable.discountPercentage.name}`
+            ),
+          },
+        })
+    );
+  }
+
+  if (statements.length > 0) {
+    await db.batch(statements as [BatchItem<"pg">]);
+  }
+
+  revalidateDbCache({ tag: CACHE_TAGS.products, userId, id: productId });
+}
+
 async function getProductCountryGroupsInternal({
   productId,
   userId,
@@ -144,7 +202,7 @@ async function getProductCountryGroupsInternal({
       id: group.id,
       name: group.name,
       recommendedDiscountPercentage: group.recommendedDiscountPercentage,
-      countries: [{ name: "India", code: "IN" }],
+      countries: group.countries,
       discount: group.countryGroupDiscounts.at(0),
     };
   });
