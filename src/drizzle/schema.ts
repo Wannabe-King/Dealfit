@@ -1,34 +1,49 @@
 import { subscriptionTiers, TierNames } from "@/data/subscriptionTiers";
-import { boolean, index, pgEnum, pgTable, primaryKey, real, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  index,
+  pgEnum,
+  pgTable,
+  primaryKey,
+  real,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm/relations";
 
-const createdAt= timestamp("created_at", {withTimezone:true}).notNull().defaultNow()
+const createdAt = timestamp("created_at", { withTimezone: true })
+  .notNull()
+  .defaultNow();
 
-const updatedAt= timestamp("updated_at",{withTimezone: true}).notNull().defaultNow().$onUpdate(()=>new Date())
+const updatedAt = timestamp("updated_at", { withTimezone: true })
+  .notNull()
+  .defaultNow()
+  .$onUpdate(() => new Date());
 
 export const ProductTable = pgTable(
-    "products",
-    {
-        id:uuid("id").primaryKey().defaultRandom(),
-        clerkUserId: text("clerk_user_id").notNull(),
-        name: text("name").notNull(),
-        description: text("description"),
-        url: text("url").notNull(),
-        createdAt,
-        updatedAt,
-    }, 
-    table => ({
-        clerkUserIdIndex: index("products.clerk_user_id_index").on(
-            table.clerkUserId
-        ),
-    })
-)
+  "products",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    clerkUserId: text("clerk_user_id").notNull(),
+    name: text("name").notNull(),
+    description: text("description"),
+    url: text("url").notNull(),
+    createdAt,
+    updatedAt,
+  },
+  (table) => ({
+    clerkUserIdIndex: index("products.clerk_user_id_index").on(
+      table.clerkUserId
+    ),
+  })
+);
 
 export const productRelations = relations(ProductTable, ({ one, many }) => ({
   productCustomization: one(ProductCustomizationTable),
   productViews: many(ProductViewTable),
-//   countryGroupDiscounts: many(CountryGroupDiscountTable),
-}))
+  countryGroupDiscounts: many(CountryGroupDiscountTable),
+}));
 
 export const ProductCustomizationTable = pgTable("product_customizations", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -51,7 +66,7 @@ export const ProductCustomizationTable = pgTable("product_customizations", {
   isSticky: boolean("is_sticky").notNull().default(true),
   createdAt,
   updatedAt,
-})
+});
 
 export const productCustomizationRelations = relations(
   ProductCustomizationTable,
@@ -61,7 +76,7 @@ export const productCustomizationRelations = relations(
       references: [ProductTable.id],
     }),
   })
-)
+);
 
 export const ProductViewTable = pgTable("product_views", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -74,7 +89,7 @@ export const ProductViewTable = pgTable("product_views", {
   visitedAt: timestamp("visited_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
-})
+});
 
 export const productViewRelations = relations(ProductViewTable, ({ one }) => ({
   product: one(ProductTable, {
@@ -85,8 +100,23 @@ export const productViewRelations = relations(ProductViewTable, ({ one }) => ({
     fields: [ProductViewTable.countryId],
     references: [CountryTable.id],
   }),
-}))
+}));
 
+export const CountryGroupTable = pgTable("country_groups", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull().unique(),
+  recommendedDiscountPercentage: real("recommended_discount_percentage"),
+  createdAt,
+  updatedAt,
+});
+
+export const countryGroupRelations = relations(
+  CountryGroupTable,
+  ({ many }) => ({
+    countries: many(CountryTable),
+    countryGroupDiscounts: many(CountryGroupDiscountTable),
+  })
+);
 
 export const CountryTable = pgTable("countries", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -97,24 +127,15 @@ export const CountryTable = pgTable("countries", {
     .references(() => CountryGroupTable.id, { onDelete: "cascade" }),
   createdAt,
   updatedAt,
-})
+});
 
-export const CountryGroupTable = pgTable("country_groups", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name").notNull().unique(),
-  recommendedDiscountPercentage: real("recommended_discount_percentage"),
-  createdAt,
-  updatedAt,
-})
-
-export const countryGroupRelations = relations(
-  CountryGroupTable,
-  ({ many }) => ({
-    countries: many(CountryTable),
-    countryGroupDiscounts: many(CountryGroupDiscountTable),
-  })
-)
-
+export const countryRelations = relations(CountryTable, ({ many, one }) => ({
+  countryGroups: one(CountryGroupTable, {
+    fields: [CountryTable.countryGroupId],
+    references: [CountryGroupTable.id],
+  }),
+  productViews: many(ProductViewTable),
+}));
 
 export const CountryGroupDiscountTable = pgTable(
   "country_group_discounts",
@@ -130,11 +151,10 @@ export const CountryGroupDiscountTable = pgTable(
     createdAt,
     updatedAt,
   },
-  table => ({
+  (table) => ({
     pk: primaryKey({ columns: [table.countryGroupId, table.productId] }),
   })
-)
-
+);
 
 export const countryGroupDiscountRelations = relations(
   CountryGroupDiscountTable,
@@ -148,13 +168,12 @@ export const countryGroupDiscountRelations = relations(
       references: [CountryGroupTable.id],
     }),
   })
-)
-
+);
 
 export const TierEnum = pgEnum(
   "tier",
   Object.keys(subscriptionTiers) as [TierNames]
-)
+);
 
 export const UserSubscriptionTable = pgTable(
   "user_subscriptions",
@@ -168,7 +187,7 @@ export const UserSubscriptionTable = pgTable(
     createdAt,
     updatedAt,
   },
-  table => ({
+  (table) => ({
     clerkUserIdIndex: index("user_subscriptions.clerk_user_id_index").on(
       table.clerkUserId
     ),
@@ -176,4 +195,4 @@ export const UserSubscriptionTable = pgTable(
       "user_subscriptions.stripe_customer_id_index"
     ).on(table.stripeCustomerId),
   })
-)
+);

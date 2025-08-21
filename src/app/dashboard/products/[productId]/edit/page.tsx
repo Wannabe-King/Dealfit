@@ -78,10 +78,10 @@ async function CountryTab({
   productId: string;
   userId: string;
 }) {
-  // const countryGroups = await getProductCountryGroups({
-  //   productId,
-  //   userId,
-  // });
+  const countryGroups = await getProductCountryGroups({
+    productId,
+    userId,
+  });
 
   return (
     <Card>
@@ -95,18 +95,7 @@ async function CountryTab({
       <CardContent>
         <CountryDiscountsForm
           productId={productId}
-          countryGroups={[
-            {
-              countries: [
-                { code: "US", name: "United States" },
-                { code: "IN", name: "India" },
-              ],
-              id: "sdfds",
-              name: "Group 1",
-              recommendedDiscountPercentage: 0.1,
-              discount: { coupon: "Hi", discountPercentage: 0.2 },
-            },
-          ]}
+          countryGroups={countryGroups}
         />
       </CardContent>
     </Card>

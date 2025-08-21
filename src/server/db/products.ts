@@ -132,6 +132,7 @@ async function getProductCountryGroupsInternal({
           coupon: true,
           discountPercentage: true,
         },
+
         where: ({ productId: id }, { eq }) => eq(id, productId),
         limit: 1,
       },
@@ -143,7 +144,7 @@ async function getProductCountryGroupsInternal({
       id: group.id,
       name: group.name,
       recommendedDiscountPercentage: group.recommendedDiscountPercentage,
-      countries: group.countries,
+      countries: [{ name: "India", code: "IN" }],
       discount: group.countryGroupDiscounts.at(0),
     };
   });

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ProductGrid } from "./_components/ProductGrid";
 
 export default async function Dashboard() {
-  const { userId, redirectToSignIn } = auth();
+  const { userId, redirectToSignIn } = await auth();
   if (userId == null) {
     return redirectToSignIn();
   }
@@ -30,7 +30,7 @@ export default async function Dashboard() {
           </Link>
         </Button>
       </h2>
-      <ProductGrid products={products}/>
+      <ProductGrid products={products} />
     </>
   );
 }
