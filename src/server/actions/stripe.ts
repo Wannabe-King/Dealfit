@@ -4,7 +4,7 @@ import { getUserSubscription } from "../db/subscription";
 import { Stripe } from "stripe";
 import {env as ServerEnv} from "@/data/env/server"
 
-const stripe = new Stripe(ServerEnv.);
+// const stripe = new Stripe(ServerEnv.);
 
 export async function createCheckoutSession(tier: PaidTierNames) {
   const user = await currentUser();
