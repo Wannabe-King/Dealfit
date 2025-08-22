@@ -16,6 +16,8 @@ import z from "zod";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { updateCountryDiscounts } from "@/server/actions/products";
 
 export function CountryDiscountsForm({
   productId,
@@ -52,9 +54,12 @@ export function CountryDiscountsForm({
     },
   });
 
-  function onSubmit(values: z.infer<typeof productCountryDiscountsSchema>) {
-    // const data=await updateCountryDiscount(productId,values);
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof productCountryDiscountsSchema>) {
+    const data = await updateCountryDiscounts(productId, values);
+
+    if (data?.message) {
+      toast(data.error ? "Error" : "Success");
+    }
   }
 
   return (
@@ -71,7 +76,7 @@ export function CountryDiscountsForm({
                   {group.name}
                 </h2>
                 <div className="flex gap-2 flex-wrap">
-                  {group.countries.map(country => (
+                  {group.countries.map((country) => (
                     <Image
                       key={country.code}
                       width={24}
