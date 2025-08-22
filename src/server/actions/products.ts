@@ -15,15 +15,15 @@ import {
   updateProductCustomization as updateProductCustomizationDb,
 } from "@/server/db/products";
 import { redirect } from "next/navigation";
-import { canCustomizeBanner } from "../permissions";
+import { canCreateProduct, canCustomizeBanner } from "../permissions";
 
 export async function createProduct(
   unsafeData: z.infer<typeof productDetailSchema>
 ): Promise<{ error: boolean; message: string } | undefined> {
   const { userId } = auth();
   const { success, data } = productDetailSchema.safeParse(unsafeData);
-
-  if (!success || userId == null) {
+  const canCreate = await canCreateProduct(userId);
+  if (!success || userId == null || !canCreate) {
     return {
       error: true,
       message: "There was an error creating your product",
@@ -130,7 +130,7 @@ export async function updateProductCustomization(
 ) {
   const { userId } = await auth();
   const { success, data } = productCustomizationSchema.safeParse(unsafeData);
-  const canCustomize = (await canCustomizeBanner(userId));
+  const canCustomize = await canCustomizeBanner(userId);
 
   console.log({ success, userId, canCustomize });
 
