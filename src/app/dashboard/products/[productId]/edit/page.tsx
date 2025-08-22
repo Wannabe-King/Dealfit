@@ -7,13 +7,16 @@ import { DetailsTab } from "./_components/detailsTab";
 import { CountryTab } from "./_components/countryTab";
 import { CustomizationsTab } from "./_components/customizationTab";
 
-export default async function EditProductPage({
-  params: { productId },
-  searchParams: { tab = "details" },
-}: {
-  params: { productId: string };
+type PageProps = {
+  params: Promise<{ productId: string }>;
   searchParams: { tab?: string };
-}) {
+};
+
+export default async function EditProductPage({
+  params,
+  searchParams: { tab = "details" },
+}: PageProps) {
+  const { productId } = await params;
   const { userId, redirectToSignIn } = auth();
   if (userId == null) return redirectToSignIn();
 
