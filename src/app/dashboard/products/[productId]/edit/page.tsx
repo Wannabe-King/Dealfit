@@ -9,14 +9,13 @@ import { CustomizationsTab } from "./_components/customizationTab";
 
 type PageProps = {
   params: Promise<{ productId: string }>;
-  searchParams: { tab?: string };
 };
 
 export default async function EditProductPage({
   params,
-  searchParams: { tab = "details" },
 }: PageProps) {
   const { productId } = await params;
+  var tab="details";
   const { userId, redirectToSignIn } = auth();
   if (userId == null) return redirectToSignIn();
 
