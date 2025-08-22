@@ -180,6 +180,25 @@ export async function updateCountryDiscounts(
   revalidateDbCache({ tag: CACHE_TAGS.products, userId, id: productId });
 }
 
+export async function updateProductCustomization(
+  data: Partial<typeof ProductCustomizationTable.$inferInsert>,
+  { productId, userId }: { productId: string; userId: string }
+) {
+  const product = await getProduct({ id: productId, userId });
+  if (product == null) return;
+
+  await db
+    .update(ProductCustomizationTable)
+    .set(data)
+    .where(eq(ProductCustomizationTable.productId, productId));
+
+  revalidateDbCache({
+    tag: CACHE_TAGS.products,
+    userId,
+    id: productId,
+  });
+}
+
 async function getProductCountryGroupsInternal({
   productId,
   userId,

@@ -18,6 +18,7 @@ import { productDetailSchema } from "@/schemas/products";
 import { createProduct, updateProduct } from "@/server/actions/products";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { RequiredLableIcon } from "@/components/RequiredLableIcon";
 
 export const ProductDetailForm = ({
   product,
@@ -61,7 +62,9 @@ export const ProductDetailForm = ({
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Product Name</FormLabel>
+                <FormLabel>
+                  Product Name <RequiredLableIcon />
+                </FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -75,7 +78,9 @@ export const ProductDetailForm = ({
             name="url"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Enter Your Website URL </FormLabel>
+                <FormLabel>
+                  Enter Your Website URL <RequiredLableIcon />
+                </FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
