@@ -10,6 +10,10 @@ import {
 import { subscriptionTiersInOrder, TierNames } from "@/data/subscriptionTiers";
 import { formatCompactNumber } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
+import {
+  createCancelSession,
+  createCheckoutSession,
+} from "@/server/actions/stripe";
 import { CheckIcon } from "lucide-react";
 import { ReactNode } from "react";
 
@@ -39,10 +43,9 @@ export function PricingCard({
       <CardContent>
         <form
           action={
-            undefined
-            // name === "Free"
-            //   ? createCancelSession
-            //   : createCheckoutSession.bind(null, name)
+            name === "Free"
+              ? createCancelSession
+              : createCheckoutSession.bind(null, name)
           }
         >
           <Button
@@ -59,10 +62,10 @@ export function PricingCard({
           {maxNumberOfProducts}{" "}
           {maxNumberOfProducts === 1 ? "product" : "products"}
         </Feature>
-        <Feature>PPP discounts</Feature>
+        <Feature>Dealfit discounts</Feature>
         {canCustomizeBanner && <Feature>Banner customization</Feature>}
         {canAccessAnalytics && <Feature>Advanced analytics</Feature>}
-        {canRemoveBranding && <Feature>Remove Easy PPP branding</Feature>}
+        {canRemoveBranding && <Feature>Remove Dealfit branding</Feature>}
       </CardFooter>
     </Card>
   );

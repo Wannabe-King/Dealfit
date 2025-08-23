@@ -17,7 +17,8 @@ import { getProductViewCount } from "@/server/db/productViews";
 import { getUserSubscriptionTier } from "@/server/db/subscription";
 import { auth } from "@clerk/nextjs/server";
 import { startOfMonth } from "date-fns";
-import { PricingCard } from "./_components/pricingCard";
+import { PricingCard } from "./components/pricingCard";
+import { createCustomerPortalSession } from "@/server/actions/stripe";
 
 export default async function SubscriptionPage() {
   const { userId, redirectToSignIn } = auth();
@@ -74,12 +75,7 @@ export default async function SubscriptionPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form
-                action={
-                  undefined
-                //   createCustomerPortalSession
-                }
-              >
+              <form action={createCustomerPortalSession}>
                 <Button
                   variant={"accent"}
                   className="text-lg rounded-lg"
