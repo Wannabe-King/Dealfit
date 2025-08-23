@@ -7,7 +7,11 @@ export const env = createEnv({
     DATABASE_URL: z.url(),
     CLERK_SECRET_KEY: z.string(),
     CLERK_WEBHOOK_SECRET: z.string(),
-    // STRIPE_SECRET_KEY: z.string(),
+    STRIPE_SECRET_KEY: z.string(),
+    STRIPE_BASIC_PLAN_STRIPE_PRICE_ID: z.string(),
+    STRIPE_STANDARD_PLAN_STRIPE_PRICE_ID: z.string(),
+    STRIPE_PREMIUM_PLAN_STRIPE_PRICE_ID: z.string(),
+    STRIPE_WEBHOOK_SECRET: z.string(),
   },
   experimental__runtimeEnv: process.env,
 });
