@@ -62,6 +62,29 @@ export function getProduct({ id, userId }: { id: string; userId: string }) {
   return cacheFn({ id, userId });
 }
 
+export function getProductForBanner({
+  id,
+  countryCode,
+  url,
+}: {
+  id: string;
+  countryCode: string;
+  url: string;
+}) {
+  const cacheFn = dbCache(getProductForBannerInternal, {
+    tags: [
+      getIdTag(id, CACHE_TAGS.products),
+      getGlobalTag(CACHE_TAGS.countries),
+      getGlobalTag(CACHE_TAGS.countryGroups),
+    ],
+  });
+  return cacheFn({
+    id,
+    countryCode,
+    url,
+  });
+}
+
 export function getProductCount(userId: string) {
   const cacheFn = dbCache(getProductCountInternal, {
     tags: [getUserTag(userId, CACHE_TAGS.products)],
@@ -289,4 +312,74 @@ async function getProductCustomizationInternal({
   });
 
   return data?.productCustomization;
+}
+
+async function getProductForBannerInternal({
+  id,
+  countryCode,
+  url,
+}: {
+  id: string;
+  countryCode: string;
+  url: string;
+}) {
+  const data = await db.query.ProductTable.findFirst({
+    where: ({ id: idCol, url: urlCol }, { eq, and }) =>
+      and(eq(idCol, id), eq(urlCol, url)),
+    columns: {
+      id: true,
+      clerkUserId: true,
+    },
+    with: {
+      productCustomization: true,
+      countryGroupDiscounts: {
+        columns: {
+          coupon: true,
+          discountPercentage: true,
+        },
+        with: {
+          countryGroup: {
+            columns: {},
+            with: {
+              countries: {
+                columns: {
+                  id: true,
+                  name: true,
+                },
+                limit: 1,
+                where: ({ code }, { eq }) => eq(code, countryCode),
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const discount = data?.countryGroupDiscounts.find(
+    (discount) => discount.countryGroup.countries.length > 0
+  );
+
+  const country = discount?.countryGroup.countries[0];
+
+  const product =
+    data == null || data.productCustomization == null
+      ? undefined
+      : {
+          id: data.id,
+          clerkUserId: data.clerkUserId,
+          customization: data.productCustomization,
+        };
+
+  return {
+    product,
+    country,
+    discount:
+      discount == null
+        ? undefined
+        : {
+            coupon: discount.coupon,
+            percentage: discount.discountPercentage,
+          },
+  };
 }
