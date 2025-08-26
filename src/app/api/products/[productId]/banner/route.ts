@@ -8,11 +8,13 @@ import { canRemoveBranding, canShowDiscountBanner } from "@/server/permissions";
 import { createElement } from "react";
 import { Banner } from "@/components/Banner";
 
-interface GeoNextRequest extends NextRequest {
+interface NextRequestWithGeo extends NextRequest {
   geo?: {
-    country?: string;
     city?: string;
+    country?: string;
     region?: string;
+    latitude?: string;
+    longitude?: string;
   };
 }
 
@@ -20,7 +22,6 @@ export async function GET(
   request: NextRequest,
   context: { params: Promise<{ productId: string }> }
 ) {
-  console.log("Hi");
   const { productId } = await context.params;
   const headersMap = await headers();
   const requestingUrl = headersMap.get("referer") || headersMap.get("origin");
@@ -37,7 +38,7 @@ export async function GET(
   console.log(discount);
 
   if (product == null) return notFound();
-
+  
   const canShowBanner = await canShowDiscountBanner(product.clerkUserId);
 
   await createProductView({
@@ -45,7 +46,6 @@ export async function GET(
     countryId: country?.id,
     userId: product.clerkUserId,
   });
-
   if (canShowBanner == null) return notFound();
   if (country == null || discount == null) return notFound();
 
@@ -60,7 +60,7 @@ export async function GET(
   );
 }
 
-function getCountryCode(request: GeoNextRequest) {
+function getCountryCode(request: NextRequestWithGeo) {
   if (request.geo?.country != null) return request.geo.country;
   if (process.env.NODE_ENV === "development") {
     return env.TEST_COUNTRY_CODE;
