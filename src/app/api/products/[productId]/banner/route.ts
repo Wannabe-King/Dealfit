@@ -8,10 +8,20 @@ import { canRemoveBranding, canShowDiscountBanner } from "@/server/permissions";
 import { createElement } from "react";
 import { Banner } from "@/components/Banner";
 
+interface GeoNextRequest extends NextRequest {
+  geo?: {
+    country?: string;
+    city?: string;
+    region?: string;
+  };
+}
+
 export async function GET(
   request: NextRequest,
-  { params: { productId } }: { params: { productId: string } }
+  context: { params: Promise<{ productId: string }> }
 ) {
+  console.log("Hi");
+  const { productId } = await context.params;
   const headersMap = await headers();
   const requestingUrl = headersMap.get("referer") || headersMap.get("origin");
   if (requestingUrl == null) return notFound();
@@ -23,6 +33,8 @@ export async function GET(
     countryCode,
     url: requestingUrl,
   });
+  console.log("discount");
+  console.log(discount);
 
   if (product == null) return notFound();
 
@@ -48,7 +60,7 @@ export async function GET(
   );
 }
 
-function getCountryCode(request: NextRequest) {
+function getCountryCode(request: GeoNextRequest) {
   if (request.geo?.country != null) return request.geo.country;
   if (process.env.NODE_ENV === "development") {
     return env.TEST_COUNTRY_CODE;
@@ -74,7 +86,7 @@ async function getJavaScript(
   const { renderToStaticMarkup } = await import("react-dom/server");
   return `
     const banner = document.createElement("div");
-    banner.innerHTML = "${renderToStaticMarkup(
+    banner.innerHTML = '${renderToStaticMarkup(
       createElement(Banner, {
         message: product.customization.locationMessage,
         mappings: {
@@ -85,7 +97,7 @@ async function getJavaScript(
         customization: product.customization,
         canRemoveBranding,
       })
-    )}";
+    )}';
     document.querySelector("${
       product.customization.bannerContainer
     }").prepend(...banner.children);

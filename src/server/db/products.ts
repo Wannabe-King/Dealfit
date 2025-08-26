@@ -12,6 +12,7 @@ import {
   getUserTag,
   revalidateDbCache,
 } from "@/lib/cache";
+import { removeTrainlingSlash } from "@/lib/utils";
 import { and, count, eq, inArray, sql } from "drizzle-orm";
 import { BatchItem } from "drizzle-orm/batch";
 
@@ -325,7 +326,7 @@ async function getProductForBannerInternal({
 }) {
   const data = await db.query.ProductTable.findFirst({
     where: ({ id: idCol, url: urlCol }, { eq, and }) =>
-      and(eq(idCol, id), eq(urlCol, url)),
+      and(eq(idCol, id), eq(urlCol, removeTrainlingSlash(url))),
     columns: {
       id: true,
       clerkUserId: true,
@@ -356,12 +357,14 @@ async function getProductForBannerInternal({
     },
   });
 
+  console.log(data);
+
   const discount = data?.countryGroupDiscounts.find(
     (discount) => discount.countryGroup.countries.length > 0
   );
+  console.log(discount);
 
   const country = discount?.countryGroup.countries[0];
-
   const product =
     data == null || data.productCustomization == null
       ? undefined

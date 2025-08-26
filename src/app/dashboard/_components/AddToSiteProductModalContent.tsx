@@ -16,35 +16,37 @@ type CopyState = "idle" | "copied" | "error";
 
 export function AddToSiteProductModalContent({ id }: { id: string }) {
   const [copyState, setCopyState] = useState<CopyState>("idle");
-    const code = `<script src="${env.NEXT_PUBLIC_SERVER_URL}/api/products/${id}/banner"></script>`;
+  const code = `<script src="${env.NEXT_PUBLIC_SERVER_URL}/api/products/${id}/banner"></script>`;
   const Icon = getCopyIcon(copyState);
 
   return (
     <DialogContent className="max-w-max">
       <DialogHeader>
-        <DialogTitle className="text-2xl">Start Earning Dealfit Sales!</DialogTitle>
+        <DialogTitle className="text-2xl">
+          Start Earning Dealfit Sales!
+        </DialogTitle>
         <DialogDescription>
           All you need to do is copy the below script into your site and your
           customers will start seeing Dealfit discounts!
         </DialogDescription>
       </DialogHeader>
       <pre className="mb-4 overflow-x-auto p-4 bg-secondary rounded max-w-screen-xl text-secondary-foreground">
-        {/* <code>{code}</code> */}
+        <code>{code}</code>
       </pre>
       <div className="flex gap-2">
         <Button
-        //   onClick={() => {
-        //     navigator.clipboard
-        //       .writeText(code)
-        //       .then(() => {
-        //         setCopyState("copied");
-        //         setTimeout(() => setCopyState("idle"), 2000);
-        //       })
-        //       .catch(() => {
-        //         setCopyState("error");
-        //         setTimeout(() => setCopyState("idle"), 2000);
-        //       });
-        //   }}
+          onClick={() => {
+            navigator.clipboard
+              .writeText(code)
+              .then(() => {
+                setCopyState("copied");
+                setTimeout(() => setCopyState("idle"), 2000);
+              })
+              .catch(() => {
+                setCopyState("error");
+                setTimeout(() => setCopyState("idle"), 2000);
+              });
+          }}
         >
           {<Icon className="size-4 mr-2" />}
           {getChildren(copyState)}
