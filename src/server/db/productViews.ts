@@ -6,6 +6,7 @@ import {
   getGlobalTag,
   getIdTag,
   getUserTag,
+  revalidateDbCache,
 } from "@/lib/cache";
 import { startOfDay, subDays } from "date-fns";
 import { and, count, desc, eq, gte, sql } from "drizzle-orm";
@@ -46,6 +47,29 @@ export function getViewsByCountryChartData({
     userId,
     interval,
   });
+}
+
+export async function createProductView({
+  productId,
+  countryId,
+  userId,
+}: {
+  productId: string
+  countryId?: string
+  userId: string
+}) {
+  const [newRow] = await db
+    .insert(ProductViewTable)
+    .values({
+      productId: productId,
+      visitedAt: new Date(),
+      countryId: countryId,
+    })
+    .returning({ id: ProductViewTable.id })
+
+  if (newRow != null) {
+    revalidateDbCache({ tag: CACHE_TAGS.productViews, userId, id: newRow.id })
+  }
 }
 
 async function getProductViewCountInternal(userId: string, startDate: Date) {

@@ -34,6 +34,8 @@ export async function GET(
     countryCode,
     url: requestingUrl,
   });
+  console.log("discount");
+  console.log(discount);
 
   if (product == null) return notFound();
   

@@ -357,12 +357,14 @@ async function getProductForBannerInternal({
     },
   });
 
+  console.log(data);
+
   const discount = data?.countryGroupDiscounts.find(
     (discount) => discount.countryGroup.countries.length > 0
   );
+  console.log(discount);
 
   const country = discount?.countryGroup.countries[0];
-
   const product =
     data == null || data.productCustomization == null
       ? undefined
