@@ -29,22 +29,22 @@ export function AddToSiteProductModalContent({ id }: { id: string }) {
         </DialogDescription>
       </DialogHeader>
       <pre className="mb-4 overflow-x-auto p-4 bg-secondary rounded max-w-screen-xl text-secondary-foreground">
-        {/* <code>{code}</code> */}
+        <code>{code}</code>
       </pre>
       <div className="flex gap-2">
         <Button
-        //   onClick={() => {
-        //     navigator.clipboard
-        //       .writeText(code)
-        //       .then(() => {
-        //         setCopyState("copied");
-        //         setTimeout(() => setCopyState("idle"), 2000);
-        //       })
-        //       .catch(() => {
-        //         setCopyState("error");
-        //         setTimeout(() => setCopyState("idle"), 2000);
-        //       });
-        //   }}
+          onClick={() => {
+            navigator.clipboard
+              .writeText(code)
+              .then(() => {
+                setCopyState("copied");
+                setTimeout(() => setCopyState("idle"), 2000);
+              })
+              .catch(() => {
+                setCopyState("error");
+                setTimeout(() => setCopyState("idle"), 2000);
+              });
+          }}
         >
           {<Icon className="size-4 mr-2" />}
           {getChildren(copyState)}
