@@ -8,10 +8,21 @@ import { canRemoveBranding, canShowDiscountBanner } from "@/server/permissions";
 import { createElement } from "react";
 import { Banner } from "@/components/Banner";
 
+interface NextRequestWithGeo extends NextRequest {
+  geo?: {
+    city?: string;
+    country?: string;
+    region?: string;
+    latitude?: string;
+    longitude?: string;
+  };
+}
+
 export async function GET(
   request: NextRequest,
-  { params: { productId } }: { params: { productId: string } }
+  context: { params: Promise<{ productId: string }> }
 ) {
+  const { productId } = await context.params;
   const headersMap = await headers();
   const requestingUrl = headersMap.get("referer") || headersMap.get("origin");
   if (requestingUrl == null) return notFound();
@@ -25,7 +36,7 @@ export async function GET(
   });
 
   if (product == null) return notFound();
-
+  
   const canShowBanner = await canShowDiscountBanner(product.clerkUserId);
 
   await createProductView({
@@ -33,7 +44,6 @@ export async function GET(
     countryId: country?.id,
     userId: product.clerkUserId,
   });
-
   if (canShowBanner == null) return notFound();
   if (country == null || discount == null) return notFound();
 
@@ -48,7 +58,7 @@ export async function GET(
   );
 }
 
-function getCountryCode(request: NextRequest) {
+function getCountryCode(request: NextRequestWithGeo) {
   if (request.geo?.country != null) return request.geo.country;
   if (process.env.NODE_ENV === "development") {
     return env.TEST_COUNTRY_CODE;
@@ -74,7 +84,7 @@ async function getJavaScript(
   const { renderToStaticMarkup } = await import("react-dom/server");
   return `
     const banner = document.createElement("div");
-    banner.innerHTML = "${renderToStaticMarkup(
+    banner.innerHTML = '${renderToStaticMarkup(
       createElement(Banner, {
         message: product.customization.locationMessage,
         mappings: {
@@ -85,7 +95,7 @@ async function getJavaScript(
         customization: product.customization,
         canRemoveBranding,
       })
-    )}";
+    )}';
     document.querySelector("${
       product.customization.bannerContainer
     }").prepend(...banner.children);
