@@ -12,6 +12,7 @@ export const env = createEnv({
     STRIPE_STANDARD_PLAN_STRIPE_PRICE_ID: z.string(),
     STRIPE_PREMIUM_PLAN_STRIPE_PRICE_ID: z.string(),
     STRIPE_WEBHOOK_SECRET: z.string(),
+    TEST_COUNTRY_CODE: z.string(),
   },
   experimental__runtimeEnv: process.env,
 });
