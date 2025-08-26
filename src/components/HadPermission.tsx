@@ -10,7 +10,7 @@ export async function HasPersmission({
 }: {
   permission: (userId: string | null) => Promise<boolean>;
   renderFallback?: boolean;
-  fallbackText: string;
+  fallbackText?: string;
   children: ReactNode;
 }) {
   const { userId } = auth();
