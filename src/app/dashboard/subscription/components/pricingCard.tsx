@@ -9,7 +9,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { subscriptionTiersInOrder, TierNames } from "@/data/subscriptionTiers";
+import {
+  PaidTierNames,
+  subscriptionTiersInOrder,
+  TierNames,
+} from "@/data/subscriptionTiers";
 import { formatCompactNumber } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 import {
@@ -46,12 +50,8 @@ export async function PricingCard({
         <form
           action={
             name === "Free"
-              ? async (formData: FormData) => {
-                  await createCancelSession();
-                }
-              : async (formData: FormData) => {
-                  await createCheckoutSession(name);
-                }
+              ? createCancelSession
+              : createCheckoutSession.bind(null, name as PaidTierNames)
           }
         >
           <Button
