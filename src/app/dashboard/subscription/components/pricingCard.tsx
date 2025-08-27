@@ -44,8 +44,12 @@ export function PricingCard({
         <form
           action={
             name === "Free"
-              ? createCancelSession
-              : createCheckoutSession.bind(null, name)
+              ? async (formData: FormData) => {
+                  await createCancelSession();
+                }
+              : async (formData: FormData) => {
+                  await createCheckoutSession(name);
+                }
           }
         >
           <Button
