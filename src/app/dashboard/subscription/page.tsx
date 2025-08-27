@@ -75,7 +75,11 @@ export default async function SubscriptionPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form action={createCustomerPortalSession}>
+              <form
+                action={async (formData: FormData) => {
+                  await createCustomerPortalSession();
+                }}
+              >
                 <Button
                   variant={"accent"}
                   className="text-lg rounded-lg"
