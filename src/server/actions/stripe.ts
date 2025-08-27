@@ -12,11 +12,11 @@ const stripe = new Stripe(ServerEnv.STRIPE_SECRET_KEY);
 
 export async function createCancelSession() {
   const user = await currentUser();
-  if (user == null) return { error: true, message: "User does not exist" };
+  if (user == null) return;
 
   const subscription = await getUserSubscription(user.id);
 
-  if (subscription == null) return { error: true };
+  if (subscription == null) return;
 
   if (
     subscription.stripeCustomerId == null ||
@@ -41,10 +41,10 @@ export async function createCancelSession() {
 
 export async function createCustomerPortalSession() {
   const { userId } = auth();
-  if (userId == null) return { error: true };
+  if (userId == null) return;
   const subscription = await getUserSubscription(userId);
 
-  if (subscription?.stripeCustomerId == null) return { error: true };
+  if (subscription?.stripeCustomerId == null) return;
 
   const portalSession = await stripe.billingPortal.sessions.create({
     customer: subscription.stripeCustomerId,
@@ -56,15 +56,15 @@ export async function createCustomerPortalSession() {
 
 export async function createCheckoutSession(tier: PaidTierNames) {
   const user = await currentUser();
-  if (user == null) return { error: true, message: "User does not exist" };
+  if (user == null) return;
 
   const subscription = await getUserSubscription(user.id);
 
-  if (subscription == null) return { error: true };
+  if (subscription == null) return;
 
   if (subscription.stripeSubscriptionId == null) {
     const url = await getCheckoutSession(tier, user);
-    if (url == null) return { error: true };
+    if (url == null) return;
     redirect(url);
   } else {
     const url = await getSubscriptionUpgradeSession(tier, subscription);
