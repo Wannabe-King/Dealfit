@@ -1,5 +1,10 @@
 import { db } from "@/drizzle/db";
-import { CountryTable, ProductTable, ProductViewTable } from "@/drizzle/schema";
+import {
+  CountryGroupTable,
+  CountryTable,
+  ProductTable,
+  ProductViewTable,
+} from "@/drizzle/schema";
 import {
   CACHE_TAGS,
   dbCache,
@@ -49,14 +54,44 @@ export function getViewsByCountryChartData({
   });
 }
 
+export function getViewsByDealfitChartData({
+  timezone,
+  productId,
+  userId,
+  interval,
+}: {
+  timezone: string;
+  productId?: string;
+  userId: string;
+  interval: (typeof CHART_INTERVALS)[keyof typeof CHART_INTERVALS];
+}) {
+  const cacheFn = dbCache(getViewsByDealfitChartDataInternal, {
+    tags: [
+      getUserTag(userId, CACHE_TAGS.productViews),
+      productId == null
+        ? getUserTag(userId, CACHE_TAGS.products)
+        : getIdTag(productId, CACHE_TAGS.products),
+      getGlobalTag(CACHE_TAGS.countries),
+      getGlobalTag(CACHE_TAGS.countryGroups),
+    ],
+  });
+
+  return cacheFn({
+    timezone,
+    productId,
+    userId,
+    interval,
+  });
+}
+
 export async function createProductView({
   productId,
   countryId,
   userId,
 }: {
-  productId: string
-  countryId?: string
-  userId: string
+  productId: string;
+  countryId?: string;
+  userId: string;
 }) {
   const [newRow] = await db
     .insert(ProductViewTable)
@@ -65,10 +100,10 @@ export async function createProductView({
       visitedAt: new Date(),
       countryId: countryId,
     })
-    .returning({ id: ProductViewTable.id })
+    .returning({ id: ProductViewTable.id });
 
   if (newRow != null) {
-    revalidateDbCache({ tag: CACHE_TAGS.productViews, userId, id: newRow.id })
+    revalidateDbCache({ tag: CACHE_TAGS.productViews, userId, id: newRow.id });
   }
 }
 
@@ -112,14 +147,56 @@ async function getViewsByCountryChartDataInternal({
     .innerJoin(CountryTable, eq(CountryTable.id, ProductViewTable.countryId))
     .where(
       gte(
-        sql`${ProductViewTable.visitedAt} AT TIME ZONE ${timezone}`
-          .inlineParams(),
+        sql`${ProductViewTable.visitedAt} AT TIME ZONE ${timezone}`.inlineParams(),
         startDate
       )
     )
     .groupBy(({ countryCode, countryName }) => [countryCode, countryName])
     .orderBy(({ views }) => desc(views))
     .limit(25);
+}
+
+async function getViewsByDealfitChartDataInternal({
+  timezone,
+  productId,
+  userId,
+  interval,
+}: {
+  timezone: string;
+  productId?: string;
+  userId: string;
+  interval: (typeof CHART_INTERVALS)[keyof typeof CHART_INTERVALS];
+}) {
+  const startDate = startOfDay(interval.startDate, { in: tz(timezone) });
+  const productSq = getProductSubQuery(userId, productId);
+  const productViewSq = db.$with("productViews").as(
+    db
+      .with(productSq)
+      .select({
+        visitedAt: sql`${ProductViewTable.visitedAt} AT TIME ZONE ${timezone}`
+          .inlineParams()
+          .as("visitedAt"),
+        countryGroupId: CountryTable.countryGroupId,
+      })
+      .from(ProductViewTable)
+      .innerJoin(productSq, eq(productSq.id, ProductViewTable.productId))
+      .innerJoin(CountryTable, eq(CountryTable.id, ProductViewTable.countryId))
+      .where(({ visitedAt }) => gte(visitedAt, startDate))
+  );
+
+  return await db
+    .with(productViewSq)
+    .select({
+      dealfitName: CountryGroupTable.name,
+      views: count(productViewSq.visitedAt),
+    })
+    .from(CountryGroupTable)
+    .leftJoin(
+      productViewSq,
+      eq(productViewSq.countryGroupId, CountryGroupTable.id)
+    )
+    .groupBy(({ dealfitName }) => [dealfitName])
+    .orderBy(({ dealfitName }) => dealfitName);
 }
 
 function getProductSubQuery(userId: string, productId?: string) {

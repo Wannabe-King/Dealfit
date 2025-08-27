@@ -11,7 +11,7 @@ export const ChartTile = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Visitors Per PPP Group</CardTitle>
+        <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent>{children}</CardContent>
     </Card>

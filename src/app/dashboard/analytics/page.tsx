@@ -6,8 +6,10 @@ import { ChartTile } from "./_components/ChartTile";
 import {
   CHART_INTERVALS,
   getViewsByCountryChartData,
+  getViewsByDealfitChartData,
 } from "@/server/db/productViews";
 import { ViewsByCountryChart } from "./_components/charts/ViewByCountryChart";
+import { ViewsByDealfitChart } from "./_components/charts/ViewsByDealfitChart";
 
 interface AnalyticsProps {
   interval?: string;
@@ -34,8 +36,18 @@ export default async function Analytics({
       <h1 className="text-3xl font-semibold">Analytics</h1>
       <HasPersmission permission={canAccessAnalytics} renderFallback>
         <div className="flex flex-col gap-8">
-          <ViewsByDayCard />
-          {/* <ViewsByDealfitCard /> */}
+          <ViewsByDayCard
+          // interval={interval}
+          // timezone={timezone}
+          // userId={userId}
+          // productId={productId}
+          />
+          <ViewsByDealfitCard
+            interval={interval}
+            timezone={timezone}
+            userId={userId}
+            productId={productId}
+          />
           <ViewsByCountryCard
             interval={interval}
             timezone={timezone}
@@ -64,14 +76,16 @@ async function ViewsByDayCard() {
   );
 }
 
-async function ViewsByDealfitCard() {
-  //   props: Parameters<typeof getViewsByPPPChartData>[0]
-  //   const chartData = await getViewsByPPPChartData(props);
-  //   return (
-  //     <ChartTile title="Visitors Per Dealfit Group">
-  //       <ViewsByDealfitChart chartData={chartData} />
-  //     </ChartTile>
-  //   );
+async function ViewsByDealfitCard(
+  props: Parameters<typeof getViewsByDealfitChartData>[0]
+) {
+  const chartData = await getViewsByDealfitChartData(props);
+  console.log(chartData);
+  return (
+    <ChartTile title="Visitors Per Dealfit Group">
+      <ViewsByDealfitChart chartData={chartData} />
+    </ChartTile>
+  );
 }
 
 async function ViewsByCountryCard(
@@ -80,13 +94,8 @@ async function ViewsByCountryCard(
   const chartData = await getViewsByCountryChartData(props);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Visitors Per Country</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ViewsByCountryChart chartData={chartData} />
-      </CardContent>
-    </Card>
+    <ChartTile title="Visitors Per Country">
+      <ViewsByCountryChart chartData={chartData} />
+    </ChartTile>
   );
 }
