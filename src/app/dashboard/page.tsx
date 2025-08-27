@@ -5,6 +5,9 @@ import Link from "next/link";
 import { ArrowRightIcon, PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductGrid } from "./_components/ProductGrid";
+import { HasPersmission } from "@/components/HadPermission";
+import { canAccessAnalytics } from "@/server/permissions";
+import { AnalyticsChart } from "./AnalyticsChart";
 
 export default async function Dashboard() {
   const { userId, redirectToSignIn } = await auth();
@@ -31,6 +34,23 @@ export default async function Dashboard() {
         </Button>
       </h2>
       <ProductGrid products={products} />
+      <h2 className="mb-6 mt-14 text-3xl font-semibold flex justify-between">
+        <Link
+          className="group flex gap-2 items-center hover:underline"
+          href={"/dashboard/products"}
+        >
+          Analytics
+          <ArrowRightIcon className="group-hover:translate-x-1 transition-transform" />
+        </Link>
+        <Button asChild>
+          <Link href={"/dashboard/products/new"}>
+            <PlusIcon className="size-4 mr-2" /> New Product
+          </Link>
+        </Button>
+      </h2>
+      <HasPersmission permission={canAccessAnalytics}>
+        <AnalyticsChart userId={userId} />
+      </HasPersmission>
     </>
   );
 }

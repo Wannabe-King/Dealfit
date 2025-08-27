@@ -8,6 +8,8 @@ import { canRemoveBranding, canShowDiscountBanner } from "@/server/permissions";
 import { createElement } from "react";
 import { Banner } from "@/components/Banner";
 
+export const runtime = "edge";
+
 interface NextRequestWithGeo extends NextRequest {
   geo?: {
     city?: string;
@@ -38,7 +40,7 @@ export async function GET(
   console.log(discount);
 
   if (product == null) return notFound();
-  
+
   const canShowBanner = await canShowDiscountBanner(product.clerkUserId);
 
   await createProductView({
