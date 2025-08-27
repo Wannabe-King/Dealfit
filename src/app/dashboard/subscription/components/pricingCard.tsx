@@ -19,7 +19,7 @@ import {
 import { CheckIcon } from "lucide-react";
 import { ReactNode } from "react";
 
-export function PricingCard({
+export async function PricingCard({
   name,
   priceInCents,
   maxNumberOfVisits,
