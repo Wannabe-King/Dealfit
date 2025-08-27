@@ -110,6 +110,7 @@ export function ProductCustomizationForm({
                   <FormDescription className="mb-8">
                     {"Data Parameters: {country}, {coupon}, {discount}"}
                   </FormDescription>
+                  <FormMessage />
                 </FormItem>
               )}
             />
