@@ -11,11 +11,9 @@ type PageProps = {
   params: Promise<{ productId: string }>;
 };
 
-export default async function EditProductPage({
-  params,
-}: PageProps) {
+export default async function EditProductPage({ params }: PageProps) {
   const { productId } = await params;
-  var tab="details";
+  var tab = "details";
   const { userId, redirectToSignIn } = auth();
   if (userId == null) return redirectToSignIn();
 
@@ -30,13 +28,13 @@ export default async function EditProductPage({
       <Tabs defaultValue={tab}>
         <TabsList className="bg-background/60">
           <TabsTrigger value="details">Details</TabsTrigger>
-          <TabsTrigger value="country">Country</TabsTrigger>
+          <TabsTrigger value="countries">Country</TabsTrigger>
           <TabsTrigger value="customization">Customization</TabsTrigger>
         </TabsList>
         <TabsContent value="details">
           <DetailsTab product={proudct} />
         </TabsContent>
-        <TabsContent value="country">
+        <TabsContent value="countries">
           <CountryTab productId={productId} userId={userId} />
         </TabsContent>
         <TabsContent value="customization">

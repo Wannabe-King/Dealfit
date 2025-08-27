@@ -13,16 +13,27 @@ import { ViewsByCountryChart } from "./_components/charts/ViewByCountryChart";
 import { ViewsByDealfitChart } from "./_components/charts/ViewsByDealfitChart";
 import { ViewsByDayChart } from "./_components/charts/ViewByDayChart";
 
-interface AnalyticsProps {
-  interval?: string;
-  timezone?: string;
-  productId?: string;
-}
+import { Button } from "@/components/ui/button";
+import { ChevronDown } from "lucide-react";
+import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+} from "@/components/ui/dropdown-menu";
+import { createURL } from "@/lib/utils";
+import { ProductDropDown } from "./_components/ProductDropDown";
+import { TimeZoneDropDownMenuItem } from "./_components/TimeZoneDropDownMenuItem";
 
 export default async function Analytics({
   searchParams,
 }: {
-  searchParams: Promise<AnalyticsProps>;
+  searchParams: Promise<{
+    interval?: string;
+    timezone?: string;
+    productId?: string;
+  }>;
 }) {
   const { userId, redirectToSignIn } = auth();
   if (userId == null) return redirectToSignIn();
@@ -35,7 +46,59 @@ export default async function Analytics({
 
   return (
     <>
-      <h1 className="text-3xl font-semibold">Analytics</h1>
+      <div className="mb-6 flex justify-between items-baseline">
+        <h1 className="text-3xl font-semibold">Analytics</h1>
+        <HasPersmission permission={canAccessAnalytics}>
+          <div className="flex gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant={"outline"}>
+                  {interval.label}
+                  <ChevronDown className="size-4 ml-2" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {Object.entries(CHART_INTERVALS).map(([key, value]) => (
+                  <DropdownMenuItem asChild key={key}>
+                    <Link
+                      href={createURL("/dashboard/analytics", searchParam, {
+                        interval: key,
+                      })}
+                    >
+                      {value.label}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant={"outline"}>
+                  {timezone}
+                  <ChevronDown className="size-4 ml-2" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem asChild>
+                  <Link
+                    href={createURL("/dashboard/analytics", searchParam, {
+                      timezone: "UTC",
+                    })}
+                  >
+                    UTC
+                  </Link>
+                </DropdownMenuItem>
+                <TimeZoneDropDownMenuItem searchParams={searchParam} />
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <ProductDropDown
+              userId={userId}
+              productId={productId}
+              searchParams={searchParam}
+            />
+          </div>
+        </HasPersmission>
+      </div>
       <HasPersmission permission={canAccessAnalytics} renderFallback>
         <div className="flex flex-col gap-8">
           <ViewsByDayCard
@@ -68,14 +131,9 @@ async function ViewsByDayCard(
   const chartData = await getViewsByDayChartData(props);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Visitors Per Day</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ViewsByDayChart chartData={chartData} />
-      </CardContent>
-    </Card>
+    <ChartTile title="Visitors Per Day">
+      <ViewsByDayChart chartData={chartData} />
+    </ChartTile>
   );
 }
 
