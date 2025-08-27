@@ -6,10 +6,12 @@ import { ChartTile } from "./_components/ChartTile";
 import {
   CHART_INTERVALS,
   getViewsByCountryChartData,
+  getViewsByDayChartData,
   getViewsByDealfitChartData,
 } from "@/server/db/productViews";
 import { ViewsByCountryChart } from "./_components/charts/ViewByCountryChart";
 import { ViewsByDealfitChart } from "./_components/charts/ViewsByDealfitChart";
+import { ViewsByDayChart } from "./_components/charts/ViewByDayChart";
 
 interface AnalyticsProps {
   interval?: string;
@@ -37,10 +39,10 @@ export default async function Analytics({
       <HasPersmission permission={canAccessAnalytics} renderFallback>
         <div className="flex flex-col gap-8">
           <ViewsByDayCard
-          // interval={interval}
-          // timezone={timezone}
-          // userId={userId}
-          // productId={productId}
+            interval={interval}
+            timezone={timezone}
+            userId={userId}
+            productId={productId}
           />
           <ViewsByDealfitCard
             interval={interval}
@@ -60,9 +62,10 @@ export default async function Analytics({
   );
 }
 
-async function ViewsByDayCard() {
-  //   props: Parameters<typeof getViewsByDayChartData>[0]
-  //   const chartData = await getViewsByDayChartData(props);
+async function ViewsByDayCard(
+  props: Parameters<typeof getViewsByDayChartData>[0]
+) {
+  const chartData = await getViewsByDayChartData(props);
 
   return (
     <Card>
@@ -70,7 +73,7 @@ async function ViewsByDayCard() {
         <CardTitle>Visitors Per Day</CardTitle>
       </CardHeader>
       <CardContent>
-        {/* <ViewsByDayChart chartData={chartData} /> */}
+        <ViewsByDayChart chartData={chartData} />
       </CardContent>
     </Card>
   );
