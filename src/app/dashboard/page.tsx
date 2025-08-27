@@ -37,7 +37,7 @@ export default async function Dashboard() {
       <h2 className="mb-6 mt-14 text-3xl font-semibold flex justify-between">
         <Link
           className="group flex gap-2 items-center hover:underline"
-          href={"/dashboard/products"}
+          href={"/dashboard/analytics"}
         >
           Analytics
           <ArrowRightIcon className="group-hover:translate-x-1 transition-transform" />
