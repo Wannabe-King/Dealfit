@@ -22,7 +22,14 @@ import { cn } from "@/lib/utils";
 export default function Home() {
   return (
     <>
-      <section className="min-h-screen bg-[radial-gradient(hsl(0,72%,65%,40%),hsl(24,62%,73%,40%),hsl(var(--background))_60%)] flex items-center justify-center text-center text-balance flex-col gap-8 px-4">
+      <section
+        className="min-h-screen 
+            bg-radial
+            from-[hsl(0_72%_65%_/_40%)] from-0%
+            via-[hsl(24_62%_73%_/_40%)] via-30%
+            to-[hsl(0_0%_100%)] to-50%
+            backdrop-blur-md flex items-center justify-center text-center text-balance flex-col gap-8 px-4"
+      >
         <h1 className="text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight m-4">
           Price Smarter, Sell bigger!
         </h1>
@@ -240,7 +247,7 @@ function FooterLinkGroup({
       <h3 className="font-semibold lg:text-xl">{title}</h3>
       <ul className="flex flex-col gap-2 text-sm lg:text-lg">
         {links.map((link) => (
-          <li key={link.href}>
+          <li key={link.label}>
             <Link href={link.href}>{link.label}</Link>
           </li>
         ))}

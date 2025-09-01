@@ -6,7 +6,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { formatCompactNumber } from "@/lib/formatters";
-import { Bar, BarChart, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, Legend, XAxis, YAxis } from "recharts";
 
 export function ViewsByDayChart({
   chartData,
@@ -19,7 +19,6 @@ export function ViewsByDayChart({
   const chartConfig = {
     views: {
       label: "Visitors",
-      color: "hsl(var(--accent))",
     },
   };
   if (chartData.length == 0) {
@@ -43,7 +42,7 @@ export function ViewsByDayChart({
           tickFormatter={formatCompactNumber}
         />
         <ChartTooltip content={<ChartTooltipContent />} />
-        <Bar dataKey={"views"} fill="var(--color-views)" />
+        <Bar dataKey={"views"} fill="var(--color-accent)" />
       </BarChart>
     </ChartContainer>
   );

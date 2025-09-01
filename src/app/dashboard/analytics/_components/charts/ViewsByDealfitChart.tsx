@@ -47,8 +47,8 @@ export const ViewsByDealfitChart = ({
           allowDecimals={false}
           tickFormatter={formatCompactNumber}
         />
-        <ChartTooltip content={<ChartTooltipContent labelKey="Parity"/>} />
-        <Bar dataKey={"views"} fill="var(--color-views)" />
+        <ChartTooltip content={<ChartTooltipContent labelKey="Parity" />} />
+        <Bar dataKey={"views"} fill="var(--color-accent)" />
       </BarChart>
     </ChartContainer>
   );
