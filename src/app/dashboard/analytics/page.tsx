@@ -1,5 +1,4 @@
 import { HasPersmission } from "@/components/HadPermission";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { canAccessAnalytics } from "@/server/permissions";
 import { auth } from "@clerk/nextjs/server";
 import { ChartTile } from "./_components/ChartTile";
@@ -25,6 +24,12 @@ import {
 import { createURL } from "@/lib/utils";
 import { ProductDropDown } from "./_components/ProductDropDown";
 import { TimeZoneDropDownMenuItem } from "./_components/TimeZoneDropDownMenuItem";
+
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Analytics",
+};
 
 export default async function Analytics({
   searchParams,

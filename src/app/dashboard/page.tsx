@@ -8,6 +8,11 @@ import { ProductGrid } from "./_components/ProductGrid";
 import { HasPersmission } from "@/components/HadPermission";
 import { canAccessAnalytics } from "@/server/permissions";
 import { AnalyticsChart } from "./AnalyticsChart";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+};
 
 export default async function Dashboard() {
   const { userId, redirectToSignIn } = await auth();

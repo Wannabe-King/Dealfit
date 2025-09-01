@@ -1,5 +1,3 @@
-"use server";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,6 +19,12 @@ import { auth } from "@clerk/nextjs/server";
 import { startOfMonth } from "date-fns";
 import { PricingCard } from "./components/pricingCard";
 import { createCustomerPortalSession } from "@/server/actions/stripe";
+
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Subscription",
+};
 
 export default async function SubscriptionPage() {
   const { userId, redirectToSignIn } = auth();

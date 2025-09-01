@@ -15,9 +15,35 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dealfit",
+  title: {
+    default: "Dealfit | Priyanshu Sidar",
+    template: "%s | Dealfit",
+  },
   description:
     "Dealfit is a full SaaS platform offering localized discounts and empowering businesses with analytics, subscription tiers, and customizable banners.",
+  authors: [{ name: "Priyanshu Sidar", url: "https://priyanshu-sidar.me" }],
+  icons: {
+    icon: "/dealfit.svg",
+  },
+  keywords: [
+    "Dealfit",
+    "SaaS discounts",
+    "localized discounts",
+    "country specific discounts",
+    "purchasing power parity discounts",
+    "business analytics platform",
+    "subscription management",
+    "Stripe payments",
+    "Clerk authentication",
+    "Next.js SaaS",
+    "Drizzle ORM",
+    "PostgreSQL SaaS",
+    "customizable banners",
+    "multi country pricing",
+    "SaaS for small business",
+    "SaaS subscription tiers",
+    "discount management platform",
+  ],
 };
 
 export default function RootLayout({

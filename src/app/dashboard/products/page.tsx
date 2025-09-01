@@ -6,6 +6,12 @@ import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { getProducts } from "@/server/db/products";
 
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Products",
+};
+
 export default async function Products() {
   const { userId, redirectToSignIn } = await auth();
   if (userId == null) return redirectToSignIn();
