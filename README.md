@@ -1,4 +1,4 @@
-# Dealfit – SaaS for Country-Specific Discounts
+# Dealfit – SaaS for Country-Specific Discounts Banners
 
 >  Dealfit is a full **SaaS platform** designed to create a **seven-figure business** by offering **localized discounts** and empowering businesses with analytics, subscription tiers, and customizable banners.
 
